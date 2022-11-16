@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace TreasureHunt
 {
-    class Program
+    public class Program
     {
         public static string textFile = "Input.txt";
 
@@ -20,6 +20,7 @@ namespace TreasureHunt
         public static void PrintMap(Terrain terrain)
         {
             foreach (string line in terrain.Map)
+                
                 Console.WriteLine(line);
         }
 
