@@ -10,8 +10,8 @@ namespace TreasureHunt
 {
     public class Terrain
     {
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        public int X { get; private set; } = 0;
+        public int Y { get; private set; } = 0;
 
         private int spacing = 4;
         public string[] Map { get; private set; }
@@ -23,34 +23,37 @@ namespace TreasureHunt
         public string OutputFile { get; private set; } = "Output.txt";
 
         private static readonly Regex RegNumber = new(@"\d+");
-        private static readonly Regex RegString = new(@"[^- \d]+");
+        private static readonly Regex RegString = new(@"[^-\d]+");
         private static readonly List<string> ValidDirections = new List<string>{ "N", "S", "E", "W" };
 
         public Terrain(string[] lines)
         {
+            if (lines.Length == 0) throw new ArgumentNullException("The input file is empty.");
             List<int> lineData;
             foreach (string line in lines)
             {
                 lineData = new List<int>();
+                if (line.Length == 0) continue; //skip empty lines
                 switch (line[0])
                 {
                     case 'C': //map
                         lineData.AddRange(ExtractNumbers(line, RegNumber));
-                        if(lineData.Count != 2) throw new ArgumentException("Input document is formatted wrong");
+                        if (X > 0 || Y > 0) throw new ArgumentException("Several maps in the same input file");
+                        if (lineData.Count != 2) throw new ArgumentException("C: Input document is formatted wrong");
                         if(lineData[0]<1 || lineData[1]<1) throw new ArgumentException("Map size is wrong");
                         X = lineData[0];
                         Y = lineData[1];
                         break;
                     case 'M': //mountain
                         lineData.AddRange(ExtractNumbers(line, RegNumber));
-                        if (lineData.Count != 2) throw new ArgumentException("Input document is formatted wrong");
+                        if (lineData.Count != 2) throw new ArgumentException("M: Input document is formatted wrong");
                         if (lineData[0] < 0 || lineData[1] < 0) throw new ArgumentException("Mountain coords are wrong");
                         mountains.Add(new Mountain(lineData[0], lineData[1]));
 
                         break;
                     case 'T': //treasure
                         lineData.AddRange(ExtractNumbers(line, RegNumber));
-                        if (lineData.Count != 3) throw new ArgumentException("Input document is formatted wrong");
+                        if (lineData.Count != 3) throw new ArgumentException("T: Input document is formatted wrong");
                         if (lineData[0] < 0 || lineData[1] < 0) throw new ArgumentException("Treasure coords are wrong");
                         treasures.Add(new Treasure(lineData[0], lineData[1], lineData[2]));
                         break;
@@ -58,12 +61,14 @@ namespace TreasureHunt
                         List<string> strData = new List<string>();
                         lineData.AddRange(ExtractNumbers(line, RegNumber));
                         strData.AddRange(ExtractString(line, RegString));
-                        if (lineData.Count != 2 || strData.Count != 4) throw new ArgumentException("Input document is formatted wrong");
+                        strData.RemoveAll(str => str ==" "); //not catching spaces, so they have to be removed manually
+                        for (int i = 0; i < strData.Count; i++) strData[i] = strData[i].Trim(); //this now allows for names with spaces in them
+                        if (lineData.Count != 2 || strData.Count != 4) throw new ArgumentException("A: Input document is formatted wrong");
                         if (lineData[0] < 0 || lineData[1] < 0) throw new ArgumentException("Adventurer coords are wrong");
                         adventurers.Add(new Adventurer(lineData[0], lineData[1], strData[1], strData[2], strData[3]));
                         spacing = Math.Max(spacing, strData[1].Length+3); //automatically adjust spacing for the name
                         break;
-                    case '#': //comment
+                    case '#': //comment, just ignore
                         break;
                     default:
                         throw new ArgumentException("Input document is formatted wrong");
@@ -219,11 +224,11 @@ namespace TreasureHunt
                         vector = ReturnVectorFromDir(a.Direction[0], c);
                         a.Direction = ReturnDirFromVector(vector).ToString();
                     }
-                    
+
+                    GenerateMap();
                 }
                 
             }
-            GenerateMap();
         }
 
         internal class Mountain
@@ -331,7 +336,7 @@ namespace TreasureHunt
             OutputFile = name + ".txt";
         }
 
-        public static string[] ReadInputFile(string path, string InputFile)
+        public static string[] ReadFile(string path, string InputFile)
         {
             return File.ReadAllLines(path + InputFile);
         }

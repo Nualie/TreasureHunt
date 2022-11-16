@@ -11,7 +11,7 @@ namespace TreasureHunt
         static void Main(string[] args)
         {
             string path = Terrain.GetUpstreamDirectory("TreasureHunt");
-            string[] lines = Terrain.ReadInputFile(path, "Input.txt");
+            string[] lines = Terrain.ReadFile(path, "Input.txt");
             Terrain game = new Terrain(lines);
             Terrain.PrintMap(game);
             game.PlayGame();

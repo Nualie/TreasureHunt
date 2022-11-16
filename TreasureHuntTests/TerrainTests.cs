@@ -91,6 +91,20 @@ namespace TreasureHunt.Tests
         }
 
         [TestMethod()]
+        public void TestAdventurersDontBumpIntoThemselves()
+        {
+            string[] TestInput =    { "C - 5 - 1", "A - Test - 1 - 0 - E - AADDAAA" };
+            string[] FileOuput =    { "C - 5 - 1", "A - Test - 0 - 0 - W - 0" };
+            string[] InputMap =     { ".       A(Test) .       .       ." };
+            string[] OutputMap =    { "A(Test) .       .       .       ." };
+            Terrain testgame = new Terrain(TestInput);
+            GenerateInputMapTest(testgame, InputMap);
+            testgame.PlayGame();
+            TestFileOutput(testgame, FileOuput);
+            GenerateOutputMapTest(testgame, OutputMap);
+        }
+
+        [TestMethod()]
         public void TestCommentsAreIgnored()
         {
             string[] TestInput =    { "C - 5 - 1","#Hello world you shouldn't see me" ,"M - 3 - 0", "A - Test - 0 - 0 - E - AAAAAAAAA" };
@@ -103,6 +117,8 @@ namespace TreasureHunt.Tests
             TestFileOutput(testgame, FileOuput);
             GenerateOutputMapTest(testgame, OutputMap);
         }
+
+        [TestMethod()]
         public void TestWithLaraExample()
         {
             Terrain testgame = new Terrain(MapStubData.ReturnStubMapInput());
@@ -112,10 +128,19 @@ namespace TreasureHunt.Tests
             TestFileOutput(testgame, MapStubData.ReturnStubMapOutput());
             GenerateOutputMapTest(testgame, MapStubData.ReturnStubMapOutputDisplay());
             Terrain.WriteOutputFile(Terrain.GetUpstreamDirectory("TreasureHuntTests"), testgame.OutputFile, testgame);
-
+            TestWhetherOutputWasGeneratedCorrectly(Terrain.GetUpstreamDirectory("TreasureHuntTests"), testgame.OutputFile, MapStubData.ReturnStubMapOutput());
         }
 
-        [TestMethod()]
+        public void TestWhetherOutputWasGeneratedCorrectly(string path, string filename, string[] expected)
+        {
+            Assert.IsTrue(File.Exists(path + filename));
+            string[] outputlines = Terrain.ReadFile(path,filename);
+            Assert.AreEqual(outputlines.Length, expected.Length);
+            for (int i = 0; i < expected.Length; i++)
+                //line by line allows to quickly figure out what went wrong
+                Assert.AreEqual(expected[i], outputlines[i]);
+        }
+
         public void GenerateInputMapTest(Terrain testgame, string[] expected)
         {
             

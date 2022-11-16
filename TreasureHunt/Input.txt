@@ -1,7 +1,10 @@
-﻿C - 3 - 4
-M - 1 - 1
-M - 2 - 2
-T - 0 - 3 - 2
-T - 1 - 3 - 1
-#Blah blah blah
-A - Indiana - 1 - 2 - S - AADADAA
+﻿
+C - 3 - 4
+M - 0 - 3
+M - 2 - 3
+T - 0 - 0 - 1
+A - Wonder Woman - 1 - 1 - S - AAADAADADAAAGAAAAGAAAGAADADDA
+#Wonder Woman gets treasure then rescues Lara Croft (she knows she can handle herself)
+
+A - Lara Croft stuck in a cave - 1 - 3 - S - DGDGDGDGDDGDGDGDGDGDGDGDGDGDGDG
+#Lara is stuck. Poor Lara
